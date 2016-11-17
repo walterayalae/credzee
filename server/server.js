@@ -1,8 +1,11 @@
-var browserify = require('browserify-middleware')
-var express = require('express')
-var Path = require('path')
-
-var routes = express.Router()
+const browserify = require('browserify-middleware');
+const express = require('express');
+const bodyParser = require('body-parser');
+const babelify = require('babelify');
+const Path = require('path');
+const db = require('./db');
+const dbInit = require('./dbInit');
+const routes = express.Router();
 
 //
 // Provide a browserified file at a specified path
@@ -12,20 +15,67 @@ routes.get('/app-bundle.js',
     // Bundles all client-side es6, JSX, and CSS/SCSS/SASS
     transform: ['babelify', 'scssify'],
   })
-)
+);
 
+//
+// Static assets (html, etc.)
+//
+const assetFolder = Path.resolve(__dirname, '../client/public')
+routes.use(express.static(assetFolder))
 //
 // Example endpoint (also tested in test/server/index_test.js)
 //
 routes.get('/api/tags-example', function(req, res) {
   res.send(['node', 'express', 'browserify', 'mithril'])
-})
+});
 
-//
-// Static assets (html, etc.)
-//
-var assetFolder = Path.resolve(__dirname, '../client/public')
-routes.use(express.static(assetFolder))
+/*
+  **********************************************************************************************
+
+  ROUTING STARTS HERE
+
+  **********************************************************************************************
+*/
+
+routes.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/public/index.html'));
+});
+
+/*
+
+/*
+  **********************************************************************************************
+
+  Handles endpoints for Store data. Methods served are GET, POST, PUT, DELETE.
+
+  Make sure you are running the Neo4j server first!
+
+  **********************************************************************************************
+*/
+
+routes.get('/api/users/all', (req, res) => {
+  console.log(req)
+  db.findAllUsers()
+  .then(users => {
+    res.status(200).send(users);
+  });
+
+});
+
+routes.post('/api/user/create', (req, res) => {
+  db.createUser(req.body.user)
+  .then(newUser => {
+    res.status(201).send(newStore);
+  });
+});
+
+
+
+
+
+
+
+
 
 
 if (process.env.NODE_ENV !== 'test') {
@@ -42,7 +92,7 @@ if (process.env.NODE_ENV !== 'test') {
   // We're in development or production mode;
   // create and run a real server.
   //
-  var app = express()
+  const app = express()
 
   // Parse incoming request bodies as JSON
   app.use( require('body-parser').json() )
@@ -51,7 +101,7 @@ if (process.env.NODE_ENV !== 'test') {
   app.use('/', routes)
 
   // Start the server!
-  var port = process.env.PORT || 4000
+  const port = process.env.PORT || 4000
   app.listen(port)
   console.log("Listening on port", port)
 }

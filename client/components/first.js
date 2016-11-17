@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 export default class First extends React.Component {
   constructor(props) {
     super(props);
@@ -7,7 +8,7 @@ export default class First extends React.Component {
   render() {
     return (
       <div className="first">
-        <h2>{this.props.title}</h2>
+        <h2>Hello</h2>
       </div>
     );
   }
