@@ -54,7 +54,6 @@ routes.get('/', (req, res) => {
 */
 
 routes.get('/api/users/all', (req, res) => {
-  console.log(req)
   db.findAllUsers()
   .then(users => {
     res.status(200).send(users);
@@ -70,6 +69,18 @@ routes.post('/api/user/create', (req, res) => {
 });
 
 
+/*
+Starts Database with dummy data
+ */
+routes.get('/db_reset', (req, res) => {
+  dbInit.reset()
+  .then(() => {
+    res.status(201).send('Database Reset!');
+  })
+  .catch((err) => {
+    res.status(500).send(err);
+  });
+});
 
 
 

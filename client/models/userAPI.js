@@ -12,5 +12,17 @@ UserAPI.createUser = (user) =>
   })
   .then(data => data.json());
 
+UserAPI.findAllUsers = () =>
+	fetch('/api/users/all', {
+		method: 'get',
+		headers: {
+			'Content-Type': 'application/json',
+		}
+	})
+	.then(data => data.json)
+	.then(users => users.map(user => ({
+
+
+	})))
 
 export default UserAPI;
